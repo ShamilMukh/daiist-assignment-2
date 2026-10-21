@@ -4,10 +4,10 @@
 defend any of this without your code in front of you. Write only what you
 can actually explain.*
 
-- **Name**:
-- **Student ID**:
-- **Email**:
-- **Group**: [BBADBA 5A | BBADBA 5B | PPLEDBA 5A | BDBA 3A]
+- **Name**: Shamil Mukhamedov
+- **Student ID**: 20352
+- **Email**: smukhamedov.ieu2022@student.ie.edu
+- **Group**: BBADBA 5B
 
 ## Business problem, and the cost of being wrong
 
@@ -16,6 +16,8 @@ when it's wrong in each direction. Be concrete about the asymmetry: which
 mistake is worse, roughly by how much, and why. Everything downstream (your
 threshold, how much you send to a person, which metric you care about) has to trace
 back to this section.*
+
+I chose pothole classifiaction with 10 labels, which are all just different ways of saying "pothole" based on spelling errors, different English dialects, etc... 
 
 ## Dataset
 
