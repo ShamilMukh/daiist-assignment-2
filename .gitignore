@@ -28,4 +28,7 @@ runs/
 
 ROBOFLOW_API_KEY=tF6XMuIyicCndr2rXhKu
 
-
+# Local Roboflow datasets
+PotholeDetection.v2i.yolov11/
+PotholeDetection.v2i.yolov11_backup/
+roboflow_download/
