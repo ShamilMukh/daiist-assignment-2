@@ -90,7 +90,9 @@ Which class carries the headline number, which one is dragging, and what the
 model actually confuses with what. Show where it breaks, not just that it
 works.*
 
-The evaluation will report per-class precision, recall, AP50, and the confusion matrix where supported by evaluation procedure. Particular attention will need to be paid in regards to whether the model misses potholes, confuses potholes with a simple road damage, or produces false detections on road surfaces and unrelated objects. Results will be added after training and testing. Because the test set contains 87 damaged-road objects and 55 pothole objects, per-class results should be interpreted cautiously. Example false positives and false negatives will be inspected to identify concrete failure modes.
+The evaluation will report per-class precision, recall, AP50, and the confusion matrix where supported by evaluation procedure. Particular attention will need to be paid in regards to whether the model misses potholes, confuses potholes with a simple road damage, or produces false detections on road surfaces and unrelated objects. Results will be added after training and testing. 
+
+Because the test set contains 87 damaged-road objects and 55 pothole objects, per-class results should be interpreted cautiously. False positives and false negatives will be inspected to identify concrete failure modes.
 
 ## Cost matrix and operating point
 
@@ -99,7 +101,7 @@ base rate you assumed. The cost-against-threshold sweep, and the operating
 point you chose. State the assumption that would most change your answer if it
 were wrong.*
 
-The initial model uses relative cost units: 10 for a missed hazard, 2 for a false-positive detection, and 1 for a human review. Correct detections have zero additional error cost. These figures are illustrative assumptions rather than measured euro costs.
+My model initially uses relative cost units. More precisely, 10 for a missed hazard, 2 for a false-positive detection, and 1 for a human review. Correct detections have zero additional error cost. As previously mention, these figures are illustrative assumptions rather than measured euro costs. 
 
 The final operating point will be selected by evaluating candidate confidence thresholds on validation data and measuring the resulting error and review costs. The test split will be used for final evaluation rather than repeatedly selecting thresholds. The assumed costs and prevalence of hazards may materially change which operating point is optimal, so the results will be presented as conditional on these assumptions.
 
@@ -111,20 +113,18 @@ Is that realistic? Then your design priced against the three alternatives:
 doing nothing, having a person check everything, and letting the model decide
 on its own.*
 
-The dashboard will use two confidence thresholds to divide predictions into automatic acceptance, human review, and no automatic flag. The selected thresholds and review share will be reported from the evaluation results.
-
-The review-capacity estimate will state the assumed number of images processed per day and the average time needed to inspect one image. It will then estimate the daily review workload and the number of reviewers required. The model-assisted policy will be compared with doing nothing, human review of every image, and fully automated model decisions.
+The dashboard use two confidence thresholds to divide predictions into automatic acceptance, human review, and no automatic flag. The selected thresholds and review share will be reported from the evaluation results. As mentioned above, per-class results should be checked by a person. The review-capacity estimate will state the assumed number of images processed per day and the average time needed to inspect one image. Then, it estimates the daily review workload and the number of reviewers required. The model-assisted policy will be compared with doing nothing, human review of every image, and fully automated model decisions.
 
 ## Limitations & next steps
 
 *Real limitations you found, and concretely how you'd address each one with
 more time or data. Not generic hedging.*
 
-The test set is small, especially for per-class evaluation. A larger and more diverse held-out dataset would produce more stable performance estimates. The original manhole class was excluded because it had only four training objects and no validation or test objects; a future version would require a substantially larger and independently evaluated manhole dataset to support that class.
+The test set is small, especially for per-class evaluation. A larger and more diverse held-out dataset would produce more stable performance estimates. The original manhole class was excluded because it had only four training objects and no validation or test objects; consequently, a future version would require a substantially larger and independently evaluated manhole dataset to support that class. For future steps, I would also ensure that this model is applicable across different roads in differen regions under various whether conditions. For instance, where I'm from it tends to snow for nearly 5 months a year, so this model may not work for this since most images in the roboflow dataset I chose have, at most, rainy terrain. 
 
-The labels Damaged road and Potholes may overlap conceptually. Sample annotations should be checked for consistency, and a future dataset should define the distinction between general damage and potholes more precisely. The dataset may also fail to represent all weather, lighting, camera, and road conditions encountered in real deployments.
+The labels Damaged road and Potholes have conceptual overlap, which makes sense in the context of the problem for pothole detection. Generally, any type of pothole needs maintenance, but different effort and different laborers for the type of pothole, which is the whole point as mentioned in the business implications. On top of that, sample annotations should be checked for consistency, so a future dataset should define the distinction between general damage and potholes more precisely. The dataset also fails to adequately represent all lighting, camera, and road conditions encountered in real-life deployments.
 
-Finally, the costs are illustrative rather than measured financial estimates. A real deployment should estimate the consequences of missed hazards, false alarms, and inspection time using operational data from a road-maintenance team.
+Lastly, the costs are hypothetical rather than concrete financial estimates. A real deployment needs to estimate the consequences of missed hazards, false alarms, and inspection time using operational data from real financial records from a road-maintenance team in a company.
 
 ## Generative AI use disclosure
 
