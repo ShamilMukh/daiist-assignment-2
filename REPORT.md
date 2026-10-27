@@ -31,6 +31,12 @@ My system will be evaluated at various confidence thresholds. In addition, predi
 image represents, what the classes are, and why this dataset actually serves
 the problem above rather than merely resembling it.*
 
+The dataset was obtained from Roboflow Universe: Workspace: moh-fzwtt; Project: pothole-detection-hg5ye; Version: 2.
+
+Dataset URL: https://universe.roboflow.com/moh-fzwtt/pothole-detection-hg5ye/dataset/2
+
+The dataset contains 4,388 training images, 250 validation images, and 100 test images. The two classes used in the final model are Damaged road and Potholes; the manhole class was excluded.
+
 The overarching Roboflow dataset had ten classes and more than five datasets, I chose the second one as it initially had three classes and it was fit for a yolov11 model. Not to mention, it has a surplus of images to train the model on. I later found out that the "manhole" class only had four images, which would result in an aggressive class imbalance, so I just removed it entirely using "cp -R PotholeDetection.v2i.yolov11 PotholeDetection.v2i.yolov11_backup" on the bash terminal in my github codepsace. 
 
 Afterwards, I changed the yaml file in the dataset in order to keep the changes consistent across the board to avoid issues in main.py. Later, I also removed the roboflow url portions from the origina yaml file I got while downloading the roboflow dataset since gpt told me that was not necessary to actually do the project properly.
