@@ -17,13 +17,13 @@ mistake is worse, roughly by how much, and why. Everything downstream (your
 threshold, how much you send to a person, which metric you care about) has to trace
 back to this section.*
 
-This project evaluates an image-based road-inspection system that detects damaged road surfaces and potholes. Its purpose is to help road-maintenance teams identify locations that may require inspection or repair. The model supports prioritization rather than replacing a human inspector.
+My project is an image-oriented road-inspection system that detects damaged road surfaces and potholes. Its primary purpose is to help road-maintenance companies identify roads that require inspection and; eventually, potential repair. The does not aim to replace a human inspector - as we discussed in class with the broke bottel example, that is not the point of image-based computer vision models - instead, the model supports prioritization for a road-inspection company.
 
-The two retained classes are Damaged road and Potholes. A false negative occurs when a relevant hazard is not detected, potentially delaying inspection or repair. A false positive occurs when the system flags a location that does not contain the predicted object, creating unnecessary inspection work.
+The two classes that I decided to keep (more on that in the subsequent section) are "Damaged road" and "Potholes". A false negative takes place when a relevant hazard is not detected, potentially delaying inspection and repair. Per contra, a false positive occurs when the system flags a location that does not contain the predicted object, creating unnecessary inspection, resulting in wasted time, money, and labor for the company.
 
-For the initial cost model, a missed hazard is assigned 10 relative cost units, a false positive 2 units, and a human review 1 unit. Correct detections incur no additional error cost. These are illustrative assumptions, not measured financial losses. The model should therefore prioritize avoiding missed hazards while controlling false alarms and the workload sent to human reviewers.
+For the initial cost model, a missed hazard is assigned 10 relative cost units, a false positive 2 units, and a human review 1 unit. As such, correct detections incur no error cost. These assumptions are illustrative for the sake of the assignment and will not measured financial losses. The model should therefore prioritize avoiding missed hazards while controlling false alarms for when the work is sent downstream to human reviewers.
 
-The system will be evaluated at different confidence thresholds. Predictions will be routed to automatic acceptance, human review, or no automatic flag according to their confidence. The final operating point will be selected using the measured evaluation results and the stated cost assumptions.
+My system will be evaluated at various confidence thresholds. In addition, predictions will be routed to automatic acceptance, human review, or no automatic flag according to their confidence. Therefore, the final operating point will be selected using the measured evaluation results and the aforementioned cost assumptions.
 
 ## Dataset
 
@@ -31,16 +31,13 @@ The system will be evaluated at different confidence thresholds. Predictions wil
 image represents, what the classes are, and why this dataset actually serves
 the problem above rather than merely resembling it.*
 
-the manhole class only had 4 images, which would result in an INSANE class imbalance, 
-so I just removed it entirely using "cp -R PotholeDetection.v2i.yolov11 PotholeDetection.v2i.yolov11_backup"
+The overarching Roboflow dataset had ten classes and more than five datasets, I chose the second one as it initially had three classes and it was fit for a yolov11 model. Not to mention, it has a surplus of images to train the model on. I later found out that the "manhole" class only had four images, which would result in an aggressive class imbalance, so I just removed it entirely using "cp -R PotholeDetection.v2i.yolov11 PotholeDetection.v2i.yolov11_backup" on the bash terminal in my github codepsace. 
 
-then changed the yaml file in the dataset in order to keep the changes consistent
+Afterwards, I changed the yaml file in the dataset in order to keep the changes consistent across the board to avoid issues in main.py. Later, I also removed the roboflow url portions from the origina yaml file I got while downloading the roboflow dataset since gpt told me that was not necessary to actually do the project properly.
 
-also removed the roboflow url portions from the yaml file since gpt told me that was not necessary to actually do the project properly
+I then created a backup of the original downloaded dataset before modifying the working copy. The working dataset configuration was updated to retain only Damaged road and Potholes, and the four manhole annotations were removed from the training labels. The final model is consequently a two-class object detector.
 
-A backup of the original downloaded dataset was created before modifying the working copy. The working dataset configuration was updated to retain only Damaged road and Potholes, and the four manhole annotations were removed from the training labels. The final model is consequently a two-class object detector.
-
-Each image represents a road scene containing zero or more labelled objects. The retained classes represent visible road damage and potholes. The dataset is relevant to the proposed decision because the detected objects can indicate road locations that may need further inspection. However, the dataset alone does not establish the severity of a defect, its precise location in the road network, or the cost of repairing it.
+Each image in the roboflow pothole detection dataset represents a road scene containing zero or more labelled objects. As previously mentioned, the classes represent visible road damage and potholes. The dataset I chose is relevant to the proposed decision because the detected objects can indicate road locations that may need further inspection. However, the dataset alone does not establish the severity of a road defect, its precise location in the road network, or the cost of repairing it, it simply shows whether or not the road has a defect and whether or not the defect is a damaged road or a pothole.
 
 ## What the dataset's composition implies
 
@@ -69,11 +66,11 @@ Validtion: 308
 Test: 142
 
 
-The counts refer to labelled objects, not unique images; an image may contain more than one object. The training split contains substantially more examples than the validation and test splits, and Damaged road is more frequent than Potholes. The test set is relatively small, particularly for per-class evaluation, so performance estimates may be sensitive to individual examples.
+The counts above refer to labelled objects and not unique images; therefore, an image may contain more than one object. The training split contains substantially more examples than the validation and test splits, and the Damaged road is more frequent than the Potholes class. On top of that, the test set is relatively small, particularly for per-class evaluation, so performance estimates may be sensitive to individual examples.
 
-The four manhole annotations were confined to the training split. Since no manhole examples appeared in validation or testing, the dataset could not support a reliable evaluation of that class. The two-class scope avoids reporting unsupported manhole performance, although the remaining classes still require inspection for consistent labelling and conceptual overlap.
+The four manhole annotations were confined to the training split. Since no manhole examples appeared in validation or testing, the dataset could not support a reliable evaluation of that class. The limited two-class scope avoids reporting unsupported manhole performance; with that said, the two remaining classes still require inspection for consistent labelling and conceptual overlap.
 
-Object sizes, image conditions, and the representativeness of the test set will be assessed by inspecting sample images and annotations. Results should be interpreted as performance on this dataset rather than proof of generalization to every road, camera, weather condition, or region.
+Object sizes, image conditions, and the representativeness of the test set will be assessed by inspecting the sample images and annotations. Lastly, results should be interpreted as performance on this dataset rather than proof of generalization to every possible road, camera, weather condition, and region - more on that in the limitations section.
 
 ## Finetuning and baselines
 
@@ -82,12 +79,9 @@ the same test split: your finetuned model, the pretrained COCO model zero-shot,
 and a trivial baseline. What changed, and whether the gap is as large as you
 expected.*
 
-The project uses YOLO11 for object detection, with the model fine-tuned on the two retained classes. Object detection is appropriate because the system needs to locate defects within an image rather than merely classify the entire image.
+My project uses yolov11 for object detection, with the model fine-tuned on two classes. Object detection is appropriate here because the system needs to locate and classify road defects within an image rather than merely classify the entire image. My final fine-tuned model will be compared on the same test split with both the pretrained COCO - Common Objects in COntext - model without fine-tuning and the trivial baseline that makes no detections at all. The predict-nothing baseline cannot detect labelled objects, so it will have zero recall and zero detection average precision. 
 
-The fine-tuned model will be compared on the same test split with (1) the pretrained COCO model without fine-tuning and (2) a trivial baseline that makes no detections. Results will be reported after evaluation.
-
-
-The predict-nothing baseline cannot detect labelled objects, so it has zero recall and zero detection average precision. Precision is undefined when the model makes no predictions. The zero-shot model will be evaluated on the same test images, using a documented mapping between its COCO predictions and the two target classes.
+Precision is undefined when the model makes no predictions at all. My zero-shot model will be evaluated on the same aforementioned test images, using a documented mapping between its Common Object in COntext - COCO - predictions and the two target classes. Final results will be reported after the evaluations have been made.
 
 ## Per-class evaluation and failure modes
 
@@ -96,9 +90,7 @@ Which class carries the headline number, which one is dragging, and what the
 model actually confuses with what. Show where it breaks, not just that it
 works.*
 
-The evaluation will report per-class precision, recall, AP50, and the confusion matrix where supported by the evaluation procedure. Particular attention will be paid to whether the model misses potholes, confuses potholes with general road damage, or produces false detections on road surfaces and unrelated objects.
-
-Results will be added after training and testing. Because the test set contains 87 damaged-road objects and 55 pothole objects, per-class results should be interpreted cautiously. Example false positives and false negatives will be inspected to identify concrete failure modes.
+The evaluation will report per-class precision, recall, AP50, and the confusion matrix where supported by evaluation procedure. Particular attention will need to be paid in regards to whether the model misses potholes, confuses potholes with a simple road damage, or produces false detections on road surfaces and unrelated objects. Results will be added after training and testing. Because the test set contains 87 damaged-road objects and 55 pothole objects, per-class results should be interpreted cautiously. Example false positives and false negatives will be inspected to identify concrete failure modes.
 
 ## Cost matrix and operating point
 
